@@ -455,7 +455,7 @@ function updateAnalysis(
             <li>Retraits cumulés : ${formatMoney(retraitsCumules)}</li>
         </ul>
         
-        <p>Pour chaque euro déposé, vous avez généré ${ratioInteretsDepots.toFixed(2)}Ar d'intérêts.</p>
+        <p>Pour chaque Ariary déposé, vous avez généré ${ratioInteretsDepots.toFixed(2)}Ar d'intérêts.</p>
         
         <p>Rendement effectif de votre investissement:</p>
         <div style="background-color: #f8f9fa; padding: 10px; border-radius: 4px;">

@@ -91,42 +91,64 @@ button:hover {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    font-size: 14px;
 }
+
 #tableResultats th, #tableResultats td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 10px;
     text-align: right;
 }
+
 #tableResultats th {
-    background-color: #f2f2f2;
+    background-color: #3498db;
+    color: white;
     text-align: center;
+    font-weight: bold;
 }
+
 #tableResultats tr:nth-child(even) {
     background-color: #f9f9f9;
 }
+
 .tabs {
     display: flex;
     margin-bottom: 15px;
+    border-bottom: 2px solid #ddd;
 }
+
 .tab {
     padding: 10px 20px;
     cursor: pointer;
-    background-color: #e9ecef;
-    border: 1px solid #dee2e6;
+    background-color: #f4f7fc;
+    border: 1px solid #ddd;
     border-bottom: none;
-    border-radius: 4px 4px 0 0;
+    border-radius: 6px 6px 0 0;
     margin-right: 5px;
+    font-weight: 500;
+    color: #555;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
+
 .tab.active {
-    background-color: white;
+    background-color: #ffffff;
+    color: #3498db;
     font-weight: bold;
+    border-bottom: 2px solid #ffffff;
 }
+
+.tab:hover {
+    background-color: #e9eef5;
+}
+
 .tab-content {
     display: none;
-    padding: 15px;
-    border: 1px solid #dee2e6;
-    border-radius: 0 0 4px 4px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 0 0 6px 6px;
+    background-color: #ffffff;
 }
+
 .tab-content.active {
     display: block;
 }
