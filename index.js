@@ -141,8 +141,9 @@ document.querySelectorAll('.tab').forEach(tab => {
 
 // Fonction pour formater les valeurs monétaires
 function formatMoney(amount) {
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
+    return new Intl.NumberFormat('fr-MG', { style: 'currency', currency: 'MGA' }).format(amount);
 }
+
 
 // Gestionnaire de soumission du formulaire
 document.getElementById('epargneForm').addEventListener('submit', function(e) {
