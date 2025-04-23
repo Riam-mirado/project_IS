@@ -8,7 +8,7 @@ body {
 }
 .container {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr 3fr;
     gap: 20px;
 }
 @media (max-width: 768px) {
@@ -56,7 +56,7 @@ button {
     margin-top: 10px;
 }
 button:hover {
-    background-color: #004494;
+    background-color: #0056b3;
 }
 .alert {
     padding: 15px;
@@ -69,7 +69,7 @@ button:hover {
     color: #155724;
 }
 .alert-warning {
-    background-color: #fff3cd;
+    background-color: #ffefcd;
     color: #856404;
 }
 .alert-danger {
@@ -101,7 +101,7 @@ button:hover {
 }
 
 #tableResultats th {
-    background-color: #3498db;
+    background-color: #0056b3;
     color: white;
     text-align: center;
     font-weight: bold;
@@ -132,7 +132,7 @@ button:hover {
 
 .tab.active {
     background-color: #ffffff;
-    color: #3498db;
+    color: #0056b3;
     font-weight: bold;
     border-bottom: 2px solid #ffffff;
 }

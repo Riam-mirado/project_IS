@@ -1,128 +1,3 @@
-    // Modèle mathématique - équation différentielle pour l'épargne
-    function dEpargne(epargne, tauxMensuel, depotMensuel, retraitMensuel) {
-    // dE/dt = r*E + d - w (où r est le taux, d les dépôts et w les retraits)
-    return tauxMensuel * epargne + depotMensuel - retraitMensuel;
-}
-
-// Méthode d'Euler pour l'intégration numérique
-function euler(epargneInitiale, tauxMensuel, depotMensuel, retraitMensuel, dureeEnMois, pasEnMois = 1) {
-    const resultats = [];
-    let epargne = epargneInitiale;
-    let interetsCumules = 0;
-    let depotsCumules = 0;
-    let retraitsCumules = 0;
-    
-    resultats.push({
-        mois: 0,
-        epargne: epargne,
-        interetsCumules: interetsCumules,
-        depotsCumules: depotsCumules,
-        retraitsCumules: retraitsCumules
-    });
-    
-    for (let mois = pasEnMois; mois <= dureeEnMois; mois += pasEnMois) {
-        const interetMensuel = tauxMensuel * epargne;
-        interetsCumules += interetMensuel;
-        depotsCumules += depotMensuel;
-        retraitsCumules += retraitMensuel;
-        
-        epargne += dEpargne(epargne, tauxMensuel, depotMensuel, retraitMensuel) * pasEnMois;
-        epargne = Math.max(0, epargne); // Éviter les valeurs négatives
-        
-        if (mois % 12 === 0 || mois === dureeEnMois) {
-            resultats.push({
-                mois: mois,
-                epargne: epargne,
-                interetsCumules: interetsCumules,
-                depotsCumules: depotsCumules,
-                retraitsCumules: retraitsCumules
-            });
-        }
-    }
-    
-    return resultats;
-}
-
-// Méthode de Runge-Kutta d'ordre 4 pour l'intégration numérique
-function rungeKutta4(epargneInitiale, tauxMensuel, depotMensuel, retraitMensuel, dureeEnMois, pasEnMois = 1) {
-    const resultats = [];
-    let epargne = epargneInitiale;
-    let interetsCumules = 0;
-    let depotsCumules = 0;
-    let retraitsCumules = 0;
-    
-    resultats.push({
-        mois: 0,
-        epargne: epargne,
-        interetsCumules: interetsCumules,
-        depotsCumules: depotsCumules,
-        retraitsCumules: retraitsCumules
-    });
-    
-    for (let mois = pasEnMois; mois <= dureeEnMois; mois += pasEnMois) {
-        // Calcul des coefficients k1, k2, k3, k4 pour RK4
-        const k1 = dEpargne(epargne, tauxMensuel, depotMensuel, retraitMensuel);
-        const k2 = dEpargne(epargne + 0.5 * pasEnMois * k1, tauxMensuel, depotMensuel, retraitMensuel);
-        const k3 = dEpargne(epargne + 0.5 * pasEnMois * k2, tauxMensuel, depotMensuel, retraitMensuel);
-        const k4 = dEpargne(epargne + pasEnMois * k3, tauxMensuel, depotMensuel, retraitMensuel);
-        
-        // Mise à jour avec la moyenne pondérée des coefficients
-        const delta = (k1 + 2*k2 + 2*k3 + k4) / 6 * pasEnMois;
-        
-        // Calcul des intérêts pour ce pas de temps
-        const interetMensuel = tauxMensuel * epargne;
-        interetsCumules += interetMensuel;
-        depotsCumules += depotMensuel;
-        retraitsCumules += retraitMensuel;
-        
-        epargne += delta;
-        epargne = Math.max(0, epargne); // Éviter les valeurs négatives
-        
-        if (mois % 12 === 0 || mois === dureeEnMois) {
-            resultats.push({
-                mois: mois,
-                epargne: epargne,
-                interetsCumules: interetsCumules,
-                depotsCumules: depotsCumules,
-                retraitsCumules: retraitsCumules
-            });
-        }
-    }
-    
-    return resultats;
-}
-
-// Calculer le dépôt mensuel nécessaire pour atteindre un objectif
-function calculerDepotNecessaire(epargneInitiale, tauxMensuel, retraitMensuel, objectif, dureeEnMois, methodeIntegration = 'rk4') {
-    // Utilisation d'une recherche dichotomique pour trouver le dépôt mensuel nécessaire
-    let depotMin = 0;
-    let depotMax = Math.max(5000, objectif / dureeEnMois); // Dépôt maximum raisonnable
-    let depot = (depotMin + depotMax) / 2;
-    const precision = 1; // Précision à 1Ar près
-    
-    while (depotMax - depotMin > precision) {
-        let resultats;
-        if (methodeIntegration === 'rk4') {
-            resultats = rungeKutta4(epargneInitiale, tauxMensuel, depot, retraitMensuel, dureeEnMois);
-        } else {
-            resultats = euler(epargneInitiale, tauxMensuel, depot, retraitMensuel, dureeEnMois);
-        }
-        
-        const epargneFinale = resultats[resultats.length - 1].epargne;
-        
-        if (Math.abs(epargneFinale - objectif) < precision) {
-            break;
-        } else if (epargneFinale < objectif) {
-            depotMin = depot;
-        } else {
-            depotMax = depot;
-        }
-        
-        depot = (depotMin + depotMax) / 2;
-    }
-    
-    return Math.ceil(depot); // Arrondir au supérieur pour être sûr
-}
 
 // Variables pour stocker les résultats de simulation
 let resultatSimulation = [];
@@ -152,7 +27,6 @@ document.getElementById('epargneForm').addEventListener('submit', function(e) {
     // Récupérer les valeurs du formulaire
     const epargneInitiale = parseFloat(document.getElementById('epargneInitiale').value);
     const depotMensuel = parseFloat(document.getElementById('depotMensuel').value);
-    const retraitMensuel = parseFloat(document.getElementById('retraitMensuel').value);
     const tauxAnnuel = parseFloat(document.getElementById('tauxAnnuel').value) / 100;
     const tauxMensuel = tauxAnnuel / 12;
     const dureeAnnees = parseInt(document.getElementById('dureeAnnees').value);
@@ -164,9 +38,9 @@ document.getElementById('epargneForm').addEventListener('submit', function(e) {
     
     // Exécuter la simulation
     if (methodeIntegration === 'rk4') {
-        resultatSimulation = rungeKutta4(epargneInitiale, tauxMensuel, depotMensuel, retraitMensuel, dureeEnMois);
+        resultatSimulation = rungeKutta4(epargneInitiale, tauxMensuel, depotMensuel,  dureeEnMois);
     } else {
-        resultatSimulation = euler(epargneInitiale, tauxMensuel, depotMensuel, retraitMensuel, dureeEnMois);
+        resultatSimulation = euler(epargneInitiale, tauxMensuel, depotMensuel,  dureeEnMois);
     }
     
     // Trouver si et quand l'objectif est atteint
@@ -185,7 +59,6 @@ document.getElementById('epargneForm').addEventListener('submit', function(e) {
         depotNecessaire = calculerDepotNecessaire(
             epargneInitiale,
             tauxMensuel,
-            retraitMensuel,
             objectifEpargne,
             objectifEnMois,
             methodeIntegration
@@ -245,7 +118,6 @@ document.getElementById('epargneForm').addEventListener('submit', function(e) {
         resultatSimulation, 
         epargneInitiale, 
         depotMensuel, 
-        retraitMensuel, 
         tauxAnnuel, 
         objectifEpargne, 
         objectifAnnees, 
@@ -285,18 +157,18 @@ function updateChart(resultats, objectif, objectifMois) {
                 {
                     label: 'Épargne (Ar)',
                     data: epargneData,
-                    borderColor: '#0056b3',
-                    backgroundColor: 'rgba(0, 86, 179, 0.1)',
-                    borderWidth: 3,
+                    borderColor: '#3498db',
+                    backgroundColor:"rgba(113, 219, 52, 0.21)",
+                    borderWidth: 4,
                     fill: true,
-                    tension: 0.4
+                    tension: 0.1
                 },
                 {
                     label: 'Objectif',
                     data: objectifData,
                     borderColor: '#28a745',
                     borderWidth: 2,
-                    borderDash: [5, 5],
+                    borderDash: [6, 2],
                     fill: false,
                     pointRadius: 0
                 }
@@ -312,15 +184,10 @@ function updateChart(resultats, objectif, objectifMois) {
                             if (context.datasetIndex === 0) {
                                 const mois = context.label * 12;
                                 const annees = Math.floor(mois / 12);
-                                const moisRestants = Math.round(mois) % 12;
                                 let periode = '';
                                 
-                                if (annees > 0 && moisRestants > 0) {
-                                    periode = `${annees} an${annees > 1 ? 's' : ''} et ${moisRestants} mois`;
-                                } else if (annees > 0) {
+                                 if (annees > 0) {
                                     periode = `${annees} an${annees > 1 ? 's' : ''}`;
-                                } else {
-                                    periode = `${moisRestants} mois`;
                                 }
                                 
                                 return `Épargne après ${periode}: ${formatMoney(context.raw)}`;
@@ -331,7 +198,7 @@ function updateChart(resultats, objectif, objectifMois) {
                     }
                 },
                 legend: {
-                    position: 'top',
+                    position: 'bottom',
                 },
                 annotation: {
                     annotations: {
@@ -370,11 +237,10 @@ function updateChart(resultats, objectif, objectifMois) {
                     const data = resultats[index];
                     
                     document.getElementById('pointInfo').innerHTML = `
-                        <strong>Après ${Math.floor(data.mois / 12)} an${Math.floor(data.mois / 12) > 1 ? 's' : ''} et ${data.mois % 12} mois:</strong><br>
+                        <strong>Après ${Math.floor(data.mois / 12)} an${Math.floor(data.mois / 12) > 1 ? 's' : ''}:</strong><br>
                         Épargne: ${formatMoney(data.epargne)}<br>
                         Intérêts cumulés: ${formatMoney(data.interetsCumules)}<br>
                         Dépôts cumulés: ${formatMoney(data.depotsCumules)}<br>
-                        Retraits cumulés: ${formatMoney(data.retraitsCumules)}
                     `;
                 }
             }
@@ -412,7 +278,6 @@ function updateTable(resultats) {
             <td>${formatMoney(data.epargne)}</td>
             <td>${formatMoney(data.interetsCumules)}</td>
             <td>${formatMoney(data.depotsCumules)}</td>
-            <td>${formatMoney(data.retraitsCumules)}</td>
         `;
         
         tableBody.appendChild(row);
@@ -424,7 +289,6 @@ function updateAnalysis(
     resultats, 
     epargneInitiale, 
     depotMensuel, 
-    retraitMensuel, 
     tauxAnnuel, 
     objectif, 
     objectifAnnees, 
@@ -439,7 +303,6 @@ function updateAnalysis(
     const epargneFinale = resultats[resultats.length - 1].epargne;
     const interetsCumules = resultats[resultats.length - 1].interetsCumules;
     const depotsCumules = resultats[resultats.length - 1].depotsCumules;
-    const retraitsCumules = resultats[resultats.length - 1].retraitsCumules;
     const dureeAnnees = resultats[resultats.length - 1].mois / 12;
     
     // Ratio intérêts/dépôts
@@ -453,7 +316,6 @@ function updateAnalysis(
             <li>Intérêts cumulés : ${formatMoney(interetsCumules)} (${(interetsCumules / epargneFinale * 100).toFixed(1)}% de l'épargne finale)</li>
             <li>Dépôts cumulés : ${formatMoney(depotsCumules)}</li>
             
-            <li>Retraits cumulés : ${formatMoney(retraitsCumules)}</li>
         </ul>
         
         <p>Pour chaque Ariary déposé, vous avez généré ${ratioInteretsDepots.toFixed(2)}Ar d'intérêts.</p>
@@ -462,7 +324,6 @@ function updateAnalysis(
         <div style="background-color: #f8f9fa; padding: 10px; border-radius: 4px;">
             <strong>Taux effectif annuel moyen : ${((Math.pow(epargneFinale / epargneInitiale, 1 / dureeAnnees) - 1) * 100).toFixed(2)}%</strong>
             ${depotMensuel > 0 ? `<br>Ce taux tient compte de vos versements mensuels réguliers de ${formatMoney(depotMensuel)}.` : ''}
-            ${retraitMensuel > 0 ? `<br>Ce taux tient compte de vos retraits mensuels réguliers de ${formatMoney(retraitMensuel)}.` : ''}
         </div>
     `;
     
@@ -503,11 +364,11 @@ function updateAnalysis(
         }
         
         // Suggestion d'optimisation fiscale si l'épargne est conséquente
-        if (epargneFinale > 50000) {
+        if (epargneFinale > 5000000000) {
             recContent += `
                 <p>Avec une épargne finale importante (${formatMoney(epargneFinale)}), pensez à explorer des options d'optimisation fiscale :</p>
                 <ul>
-                    <li>Plans d'épargne retraite</li>
+                    <li>Plans d'épargne e</li>
                     <li>Assurance-vie</li>
                     <li>Investissements immobiliers</li>
                     <li>PEA (Plan d'Épargne en Actions)</li>
@@ -525,7 +386,7 @@ function updateAnalysis(
             <ul>
                 <li>Augmenter votre dépôt mensuel à ${formatMoney(depotNecessaire)} (+ ${formatMoney(depotNecessaire - depotMensuel)})</li>
                 <li>Ou chercher un placement avec un taux d'intérêt plus élevé (au moins ${(tauxAnnuel * 100 * 1.5).toFixed(2)}%)</li>
-                <li>Ou diminuer les retraits mensuels si possible</li>
+                <li>Ou diminuer les s mensuels si possible</li>
             </ul>
         `;
     } else {
@@ -540,7 +401,6 @@ function updateAnalysis(
                 <li>Augmenter significativement votre dépôt mensuel à ${formatMoney(depotNecessaire)} (+ ${formatMoney(depotNecessaire - depotMensuel)})</li>
                 <li>Chercher un placement avec un meilleur rendement (minimum recommandé : ${Math.max(tauxAnnuel * 100 * 2, 5).toFixed(2)}%)</li>
                 <li>Réévaluer votre objectif d'épargne ou l'horizon temporel</li>
-                <li>Réduire ou éliminer les retraits mensuels si possible</li>
             </ul>
         `;
     }
@@ -565,7 +425,8 @@ window.addEventListener('load', function() {
     initialiserSimulation();
 });
 
-// Nouvelle fonction pour initialiser la simulation
+
+//fonction pour initialiser la simulation
 function initialiserSimulation() {
     const epargneForm = document.getElementById('epargneForm');
     const event = new Event('submit', { cancelable: true });

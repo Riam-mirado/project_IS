@@ -5,41 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulateur d'Épargne Avancé</title>
     <link rel="stylesheet" href="style.css">
-    <script src="Chart.js"></script>
     
 </head>
 <body>
-    <h1>Simulateur d'Épargne avec Équations Différentielles</h1>
+    <h1>Simulateur d'Épargne</h1>
     
     <div class="container">
         <div class="input-panel">
             <h2>Paramètres de l'épargne</h2>
             <form id="epargneForm">
                 <label for="epargneInitiale">Épargne initiale (Ar):</label>
-                <input type="number" id="epargneInitiale" value="5000" min="0" step="100">
+                <input type="number" id="epargneInitiale" value="100000" min="0" >
                 
                 <label for="depotMensuel">Dépôt mensuel (Ar):</label>
-                <input type="number" id="depotMensuel" value="300" min="0" step="50">
+                <input type="number" id="depotMensuel" value="8000" >
                 
-                <label for="retraitMensuel">Retrait mensuel (Ar):</label>
-                <input type="number" id="retraitMensuel" value="0" min="0" step="50">
                 
                 <label for="tauxAnnuel">Taux d'intérêt annuel (%):</label>
                 <input type="number" id="tauxAnnuel" value="3" min="0" max="20" step="0.1">
                 
                 <label for="dureeAnnees">Durée de simulation (années):</label>
-                <input type="number" id="dureeAnnees" value="10" min="1" max="50">
+                <input type="number" id="dureeAnnees" value="25" min="1" max="50">
                 
                 <label for="objectifEpargne">Objectif d'épargne (Ar):</label>
-                <input type="number" id="objectifEpargne" value="50000" min="0" step="1000">
+                <input type="number" id="objectifEpargne" value="2500000" min="0">
                 
                 <label for="objectifAnnees">Objectif à atteindre en (années):</label>
-                <input type="number" id="objectifAnnees" value="5" min="1" max="50">
+                <input type="number" id="objectifAnnees" value="22" min="1" max="50">
                 
                 <label for="methodeIntegration">Méthode d'intégration:</label>
                 <select id="methodeIntegration">
                     <option value="rk4">Runge-Kutta d'ordre 4</option>
-                    <option value="euler">Euler (moins précis)</option>
+                    <option value="euler">Euler</option>
                 </select>
                 
                 <button type="submit">Calculer</button>
@@ -70,10 +67,9 @@
                     <thead>
                         <tr>
                             <th>Année</th>
-                            <th>Épargne (Ar)</th>
-                            <th>Intérêts cumulés (Ar)</th>
-                            <th>Dépôts cumulés (Ar)</th>
-                            <th>Retraits cumulés (Ar)</th>
+                            <th>Épargne </th>
+                            <th>Intérêts cumulés </th>
+                            <th>Dépôts cumulés </th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
@@ -89,7 +85,8 @@
             </div>
         </div>
     </div>
-
+    <script src="Chart.js"></script>
+    <script src="calcul.js"></script>
     <script src="index.js"> </script>
 </body>
 </html>
