@@ -48,6 +48,26 @@ function afficherHistorique() {
         });
     });
 }
+// Fonction pour télécharger l'historique sous forme de fichier JSON
+function telechargerHistorique() {
+    // Créer un objet Blob contenant les données d'historique
+    const historiqueJSON = JSON.stringify(historiqueSimulations, null, 2); // Formatage avec indentation
+    const blob = new Blob([historiqueJSON], { type: 'application/json' });
+
+    // Créer un lien de téléchargement
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'historique_simulations.json'; // Nom du fichier
+    a.click();
+
+    // Libérer l'URL créée
+    URL.revokeObjectURL(url);
+}
+
+
+// Ajouter un bouton "Télécharger l'historique" dans le HTML
+document.getElementById('telechargerBtn').addEventListener('click', telechargerHistorique);
 
 // Initialisation des onglets
 document.querySelectorAll('.tab').forEach(tab => {
