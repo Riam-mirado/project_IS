@@ -2,6 +2,52 @@
 // Variables pour stocker les résultats de simulation
 let resultatSimulation = [];
 let chart = null;
+let historiqueSimulations = JSON.parse(localStorage.getItem('historiqueSimulations')) || [];
+
+// Ajouter une fonction pour sauvegarder une simulation dans l'historique
+function sauvegarderSimulation(simulation) {
+    historiqueSimulations.push(simulation);
+    localStorage.setItem('historiqueSimulations', JSON.stringify(historiqueSimulations));
+}
+// Fonction pour supprimer une simulation par son index
+function supprimerSimulation(index) {
+    // Supprimer l'entrée du tableau
+    historiqueSimulations.splice(index, 1);
+
+    // Mettre à jour localStorage
+    localStorage.setItem('historiqueSimulations', JSON.stringify(historiqueSimulations));
+
+    // Rafraîchir l'affichage de l'historique
+    afficherHistorique();
+}
+
+// Afficher l'historique des simulations
+function afficherHistorique() {
+    const historiqueBody = document.getElementById('historiqueBody');
+    historiqueBody.innerHTML = ''; // Vider le tableau
+
+    historiqueSimulations.forEach((simulation, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${simulation.date}</td>
+            <td>${formatMoney(simulation.epargneInitiale)}</td>
+            <td>${formatMoney(simulation.depotMensuel)}</td>
+            <td>${simulation.tauxAnnuel.toFixed(2)}%</td>
+            <td>${simulation.dureeAnnees} ans</td>
+            <td>${formatMoney(simulation.objectifEpargne)}</td>
+            <td><button class="delete-btn" data-index="${index}">Supprimer</button></td>
+        `;
+        historiqueBody.appendChild(row);
+    });
+
+    // Ajouter des écouteurs d'événements pour les boutons "Supprimer"
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const index = parseInt(this.dataset.index);
+            supprimerSimulation(index); // Appeler la fonction pour supprimer l'entrée
+        });
+    });
+}
 
 // Initialisation des onglets
 document.querySelectorAll('.tab').forEach(tab => {
@@ -35,7 +81,20 @@ document.getElementById('epargneForm').addEventListener('submit', function(e) {
     const objectifAnnees = parseInt(document.getElementById('objectifAnnees').value);
     const objectifEnMois = objectifAnnees * 12;
     const methodeIntegration = document.getElementById('methodeIntegration').value;
+    // Sauvegarder les paramètres de la simulation dans l'historique
+    const simulation = {
+        epargneInitiale,
+        depotMensuel,
+        tauxAnnuel,
+        dureeAnnees,
+        objectifEpargne,
+        objectifAnnees,
+        date: new Date().toLocaleString()
+    };
+    sauvegarderSimulation(simulation);
     
+        // Mettre à jour l'affichage de l'historique
+    afficherHistorique();
     // Exécuter la simulation
     if (methodeIntegration === 'rk4') {
         resultatSimulation = rungeKutta4(epargneInitiale, tauxMensuel, depotMensuel,  dureeEnMois);
@@ -407,13 +466,7 @@ function updateAnalysis(
     
     // Ajouter des conseils généraux
     recContent += `
-        <h4>Conseils généraux :</h4>
-        <ul>
-            <li>Diversifiez vos placements pour réduire les risques</li>
-            <li>Constituez d'abord un fonds d'urgence équivalent à 3-6 mois de dépenses</li>
-            <li>Réévaluez régulièrement votre stratégie d'épargne en fonction de votre situation personnelle</li>
-            <li>Prenez en compte l'inflation dans vos projections à long terme</li>
-        </ul>
+
     `;
     
     recommandations.innerHTML = recContent;
@@ -421,10 +474,10 @@ function updateAnalysis(
 
 // Initialiser les graphiques, tableaux et analyses vides au chargement
 // Remplacez le dispatchEvent par un appel direct à une fonction
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     initialiserSimulation();
+    afficherHistorique(); // Afficher l'historique existant
 });
-
 
 //fonction pour initialiser la simulation
 function initialiserSimulation() {
