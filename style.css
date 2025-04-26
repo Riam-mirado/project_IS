@@ -152,3 +152,45 @@ button:hover {
 .tab-content.active {
     display: block;
 }
+.history-panel {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+#historiqueTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+#historiqueTable th, #historiqueTable td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+#historiqueTable th {
+    background-color: #0056b3;
+    color: white;
+}
+
+#historiqueTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+.delete-btn {
+    background-color: #f44336; 
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+    background-color: #d32f2f;
+}
